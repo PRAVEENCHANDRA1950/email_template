@@ -598,13 +598,15 @@ class _EmailTemplateBuilderState extends State<EmailTemplateBuilder> {
 style="
 width:100%;
 border-collapse:collapse;
+table-layout:fixed;
 margin:12px 0;
 border:1px solid #BBDEFB;
 ">
 ''');
 
     for (int r = 0; r < table.rows; r++) {
-      final bg = r == 0 ? '#1E88E5' : (r.isEven ? '#F9FAFB' : '#FFFFFF');
+      // Header + alternating row colors
+      final bg = r == 0 ? '#1E88E5' : ((r - 1).isEven ? '#FFFFFF' : '#F9FAFB');
 
       buffer.write('<tr style="background:$bg;">');
 
@@ -617,10 +619,12 @@ border:1px solid #BBDEFB;
 
         String cellHtml = cellConverter.convert();
 
+        // Empty cell
         if (cellHtml.replaceAll(RegExp(r'<[^>]+>'), '').trim().isEmpty) {
           cellHtml = '&nbsp;';
         }
 
+        // Replace placeholder tokens
         for (final token in _systemTokens) {
           cellHtml = cellHtml.replaceAll(
             token['token']!,
@@ -628,15 +632,23 @@ border:1px solid #BBDEFB;
           );
         }
 
+        // Remove default paragraph spacing
+        cellHtml = cellHtml.replaceAll(
+          '<p>',
+          '<p style="margin:0;line-height:1.3;">',
+        );
+
         if (r == 0) {
           buffer.write('''
 <th
 style="
-padding:10px;
+padding:6px 8px;
 border:1px solid #BBDEFB;
 color:white;
 font-weight:bold;
 text-align:left;
+vertical-align:middle;
+word-break:break-word;
 ">
 $cellHtml
 </th>
@@ -645,8 +657,10 @@ $cellHtml
           buffer.write('''
 <td
 style="
-padding:10px;
+padding:6px 8px;
 border:1px solid #E5E7EB;
+vertical-align:middle;
+word-break:break-word;
 ">
 $cellHtml
 </td>
