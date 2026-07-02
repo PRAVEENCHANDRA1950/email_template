@@ -305,10 +305,152 @@ class _EmailTemplateBuilderState extends State<EmailTemplateBuilder> {
   String _currentHtmlPreview = '';
 
   final List<Map<String, String>> _systemTokens = [
-    {'label': 'Customer Name', 'token': '{{customer_name}}'},
-    {'label': 'Order ID', 'token': '{{order_id}}'},
-    {'label': 'Total Amount', 'token': '{{total_amount}}'},
-    {'label': 'Shipping Address', 'token': '{{shipping_address}}'},
+    {
+      'label': 'Customer Name',
+      'token': '{{customer_name}}',
+      'value': 'Accesspl',
+    },
+    {'label': 'Order ID', 'token': '{{order_id}}', 'value': '56,000'},
+    {'label': 'Total Amount', 'token': '{{total_amount}}', 'value': '23,000'},
+    {
+      'label': 'Shipping Address',
+      'token': '{{shipping_address}}',
+      'value': '1122, 3rd main \n bangalore',
+    },
+    {
+      'label': 'Company Name',
+      'token': '{{company_name}}',
+      'value': 'ABC COMPANY \n <br> Mysore',
+    },
+    {
+      'label': 'powered by',
+      'token': '{{powered_by}}',
+      'value':
+          '<a href="https://talkingtotals.ai", style="color:blue, ">Talkingtotals.ai</a>',
+    },
+    {
+      'label': 'Table Render',
+      'token': '{{table_render}}',
+      'value': ''' <!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Financial Summary</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+      }
+
+      h2 {
+        text-align: center;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+      }
+
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: center;
+      }
+
+      th {
+        background-color: #2c3e50;
+        color: white;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      .income {
+        color: green;
+        font-weight: bold;
+      }
+
+      .expense {
+        color: red;
+        font-weight: bold;
+      }
+
+      tfoot td {
+        font-weight: bold;
+        background-color: #ecf0f1;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Daily Financial Summary</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Category</th>
+          <th>Income (₹)</th>
+          <th>Expense (₹)</th>
+          <th>Balance (₹)</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>02-Jul-2026</td>
+          <td>Salary</td>
+          <td>Income</td>
+          <td class="income">5,000.00</td>
+          <td>-</td>
+          <td>5,000.00</td>
+        </tr>
+
+        <tr>
+          <td>02-Jul-2026</td>
+          <td>Groceries</td>
+          <td>Food</td>
+          <td>-</td>
+          <td class="expense">850.00</td>
+          <td>4,150.00</td>
+        </tr>
+
+        <tr>
+          <td>02-Jul-2026</td>
+          <td>Fuel</td>
+          <td>Transport</td>
+          <td>-</td>
+          <td class="expense">500.00</td>
+          <td>3,650.00</td>
+        </tr>
+
+        <tr>
+          <td>02-Jul-2026</td>
+          <td>Freelance Payment</td>
+          <td>Income</td>
+          <td class="income">2,000.00</td>
+          <td>-</td>
+          <td>5,650.00</td>
+        </tr>
+      </tbody>
+
+      <tfoot>
+        <tr>
+          <td colspan="3">Totals</td>
+          <td>₹7,000.00</td>
+          <td>₹1,350.00</td>
+          <td>₹5,650.00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </body>
+</html>''',
+    },
   ];
 
   @override
@@ -542,12 +684,61 @@ class _EmailTemplateBuilderState extends State<EmailTemplateBuilder> {
     _updateHtmlPreview();
   }
 
+  // String _compileEntireCanvasToHtml() {
+  //   final rawDelta = _mainTextController.document.toDelta().toJson();
+
+  //   final List<Map<String, dynamic>> compiledDeltas = [];
+  //   final Map<String, String> tableMap = {};
+
+  //   for (final op in rawDelta) {
+  //     if (op['insert'] is Map) {
+  //       final insertMap = op['insert'] as Map;
+
+  //       if (insertMap.containsKey('custom_inline_table')) {
+  //         final tableId = insertMap['custom_inline_table'].toString();
+  //         final table = globalTableRegistry[tableId];
+
+  //         if (table != null) {
+  //           tableMap[tableId] = _buildTableHtml(table);
+
+  //           compiledDeltas.add({'insert': '__TABLE__$tableId'});
+
+  //           continue;
+  //         }
+  //       }
+  //     }
+
+  //     compiledDeltas.add(Map<String, dynamic>.from(op));
+  //   }
+
+  //   final converter = QuillDeltaToHtmlConverter(compiledDeltas);
+
+  //   String html = converter.convert();
+
+  //   // Decode escaped HTML
+  //   html = HtmlUnescape().convert(html);
+
+  //   // Replace placeholders with real tables
+  //   tableMap.forEach((id, tableHtml) {
+  //     html = html.replaceAll('<p>__TABLE__$id</p>', tableHtml);
+
+  //     html = html.replaceAll('__TABLE__$id', tableHtml);
+  //   });
+
+  //   // Remove invalid paragraph wrappers
+  //   html = html.replaceAll('<p><table', '<table');
+  //   html = html.replaceAll('</table></p>', '</table>');
+
+  //   return html;
+  // }
+
   String _compileEntireCanvasToHtml() {
     final rawDelta = _mainTextController.document.toDelta().toJson();
 
     final List<Map<String, dynamic>> compiledDeltas = [];
     final Map<String, String> tableMap = {};
 
+    // Replace custom table embeds with placeholders
     for (final op in rawDelta) {
       if (op['insert'] is Map) {
         final insertMap = op['insert'] as Map;
@@ -573,17 +764,26 @@ class _EmailTemplateBuilderState extends State<EmailTemplateBuilder> {
 
     String html = converter.convert();
 
-    // Decode escaped HTML
+    // Decode HTML entities
     html = HtmlUnescape().convert(html);
 
-    // Replace placeholders with real tables
+    // Replace table placeholders with generated table HTML
     tableMap.forEach((id, tableHtml) {
       html = html.replaceAll('<p>__TABLE__$id</p>', tableHtml);
-
       html = html.replaceAll('__TABLE__$id', tableHtml);
     });
 
-    // Remove invalid paragraph wrappers
+    // ---------------------------------------------------
+    // Replace ALL tokens with their VALUES
+    // ---------------------------------------------------
+    for (final token in _systemTokens) {
+      final tokenKey = token['token']!;
+      final tokenValue = token['value'] ?? '';
+
+      html = html.replaceAll(tokenKey, tokenValue);
+    }
+
+    // Remove invalid wrappers around tables
     html = html.replaceAll('<p><table', '<table');
     html = html.replaceAll('</table></p>', '</table>');
 
@@ -624,11 +824,21 @@ border:1px solid #BBDEFB;
           cellHtml = '&nbsp;';
         }
 
-        // Replace placeholder tokens
+        // // Replace placeholder tokens
+        // for (final token in _systemTokens) {
+        //   cellHtml = cellHtml.replaceAll(
+        //     token['token']!,
+        //     '<strong><span class="placeholder-token">${token['token']!}</span></strong>',
+        //   );
+        // }
+
         for (final token in _systemTokens) {
+          final tokenText = token['token']!;
+          final tokenValue = token['value'] ?? '';
+
           cellHtml = cellHtml.replaceAll(
-            token['token']!,
-            '<strong><span class="placeholder-token">${token['token']!}</span></strong>',
+            tokenText,
+            '<span class="placeholder-token"><strong>$tokenValue</strong></span>',
           );
         }
 
